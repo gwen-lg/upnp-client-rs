@@ -266,7 +266,6 @@ pub fn parse_duration(xml_root: &str) -> Result<u32> {
             }
             Ok(XmlEvent::Characters(duration_str)) => {
                 if in_duration {
-                    let duration_str = duration_str.replace(':', "");
                     duration = Some(duration_str);
                 }
             }
@@ -275,9 +274,10 @@ pub fn parse_duration(xml_root: &str) -> Result<u32> {
     }
 
     let duration = duration.ok_or_else(|| anyhow!("Invalid response from device"))?;
-    let hours = duration[0..2].parse::<u32>()?;
-    let minutes = duration[2..4].parse::<u32>()?;
-    let seconds = duration[4..6].parse::<u32>()?;
+    let mut duration_iter = duration.split(":");
+    let hours = duration_iter.next().unwrap_or("0").parse::<u32>()?;
+    let minutes = duration_iter.next().unwrap_or("0").parse::<u32>()?;
+    let seconds = duration_iter.next().unwrap_or("0").parse::<u32>()?;
     Ok(hours * 3600 + minutes * 60 + seconds)
 }
 
