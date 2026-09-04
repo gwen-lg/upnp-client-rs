@@ -753,7 +753,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_parsing_device_without_service_list() {
-        const XML_ROOT: &'static str = r#"<?xml version="1.0" encoding="UTF-8"?>
+        const XML_ROOT: &str = r#"<?xml version="1.0" encoding="UTF-8"?>
         <root xmlns="urn:schemas-upnp-org:device-1-0">
             <specVersion>
                 <major>1</major>
