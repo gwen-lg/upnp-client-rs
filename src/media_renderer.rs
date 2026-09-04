@@ -37,31 +37,11 @@ impl MediaRendererClient {
         let dlna_features = options.dlna_features.unwrap_or("*".to_string());
         let content_type = options.content_type.unwrap_or("video/mpeg".to_string());
         let protocol_info = format!("http-get:*:{}:{}", content_type, dlna_features);
-        let title = options
-            .metadata
-            .clone()
-            .unwrap_or(Metadata::default())
-            .title;
-        let artist = options
-            .metadata
-            .clone()
-            .unwrap_or(Metadata::default())
-            .artist;
-        let album = options
-            .metadata
-            .clone()
-            .unwrap_or(Metadata::default())
-            .album;
-        let album_art_uri = options
-            .metadata
-            .clone()
-            .unwrap_or(Metadata::default())
-            .album_art_uri;
-        let genre = options
-            .metadata
-            .clone()
-            .unwrap_or(Metadata::default())
-            .genre;
+        let title = options.metadata.clone().unwrap_or_default().title;
+        let artist = options.metadata.clone().unwrap_or_default().artist;
+        let album = options.metadata.clone().unwrap_or_default().album;
+        let album_art_uri = options.metadata.clone().unwrap_or_default().album_art_uri;
+        let genre = options.metadata.clone().unwrap_or_default().genre;
 
         let m = Metadata {
             url: url.to_string(),
@@ -152,31 +132,11 @@ impl MediaRendererClient {
         let dlna_features = options.dlna_features.unwrap_or("*".to_string());
         let content_type = options.content_type.unwrap_or("video/mpeg".to_string());
         let protocol_info = format!("http-get:*:{}:{}", content_type, dlna_features);
-        let title = options
-            .metadata
-            .clone()
-            .unwrap_or(Metadata::default())
-            .title;
-        let artist = options
-            .metadata
-            .clone()
-            .unwrap_or(Metadata::default())
-            .artist;
-        let album = options
-            .metadata
-            .clone()
-            .unwrap_or(Metadata::default())
-            .album;
-        let album_art_uri = options
-            .metadata
-            .clone()
-            .unwrap_or(Metadata::default())
-            .album_art_uri;
-        let genre = options
-            .metadata
-            .clone()
-            .unwrap_or(Metadata::default())
-            .genre;
+        let title = options.metadata.clone().unwrap_or_default().title;
+        let artist = options.metadata.clone().unwrap_or_default().artist;
+        let album = options.metadata.clone().unwrap_or_default().album;
+        let album_art_uri = options.metadata.clone().unwrap_or_default().album_art_uri;
+        let genre = options.metadata.clone().unwrap_or_default().genre;
 
         let m = Metadata {
             url: url.to_string(),
