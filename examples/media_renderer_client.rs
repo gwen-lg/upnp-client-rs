@@ -38,7 +38,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }),
         autoplay: true,
         object_class: Some(ObjectClass::Video),
-        ..Default::default()
     };
 
     let media_url =
