@@ -91,9 +91,7 @@ fn parse_attribute(xml_root: &str, xml_name: &str) -> Result<String> {
                     .ok_or_else(|| anyhow!("xml_name ended unexpectedly"))?,
             );
             match element {
-                Some(element) => {
-                    return Ok(element.text().to_string());
-                }
+                Some(element) => Ok(element.text().to_string()),
                 None => Ok("".to_string()),
             }
         }
