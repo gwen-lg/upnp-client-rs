@@ -40,3 +40,6 @@ xml-rs = "0.8.4"
 
 [dev-dependencies]
 colored_json = "5.0"
+
+[lints.rust]
+#rust-2024-compatibility = "warn"
