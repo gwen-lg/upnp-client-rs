@@ -235,10 +235,8 @@ pub fn parse_volume(xml_root: &str) -> Result<u8> {
                     in_current_volume = false;
                 }
             }
-            Ok(XmlEvent::Characters(volume)) => {
-                if in_current_volume {
-                    current_volume = Some(volume.parse()?);
-                }
+            Ok(XmlEvent::Characters(volume)) if in_current_volume => {
+                current_volume = Some(volume.parse()?);
             }
             _ => {}
         }
@@ -262,10 +260,8 @@ pub fn parse_duration(xml_root: &str) -> Result<u32> {
                     in_duration = false;
                 }
             }
-            Ok(XmlEvent::Characters(duration_str)) => {
-                if in_duration {
-                    duration = Some(duration_str);
-                }
+            Ok(XmlEvent::Characters(duration_str)) if in_duration => {
+                duration = Some(duration_str);
             }
             _ => {}
         }
@@ -296,10 +292,8 @@ pub fn parse_position(xml_root: &str) -> Result<u32> {
                     in_position = false;
                 }
             }
-            Ok(XmlEvent::Characters(position_str)) => {
-                if in_position {
-                    position = Some(position_str);
-                }
+            Ok(XmlEvent::Characters(position_str)) if in_position => {
+                position = Some(position_str);
             }
             _ => {}
         }
@@ -329,10 +323,8 @@ pub fn parse_supported_protocols(xml_root: &str) -> Result<Vec<String>> {
                     in_protocol = false;
                 }
             }
-            Ok(XmlEvent::Characters(protocol)) => {
-                if in_protocol {
-                    protocols = protocol;
-                }
+            Ok(XmlEvent::Characters(protocol)) if in_protocol => {
+                protocols = protocol;
             }
             _ => {}
         }
@@ -356,10 +348,8 @@ pub fn parse_last_change(xml_root: &str) -> Result<Option<String>> {
                     in_last_change = false;
                 }
             }
-            Ok(XmlEvent::Characters(last_change)) => {
-                if in_last_change {
-                    result = Some(last_change);
-                }
+            Ok(XmlEvent::Characters(last_change)) if in_last_change => {
+                result = Some(last_change);
             }
             _ => {}
         }
@@ -542,10 +532,8 @@ pub fn parse_browse_response(xml: &str, ip: &str) -> Result<(Vec<Container>, Vec
                     in_result = false;
                 }
             }
-            Ok(XmlEvent::Characters(value)) => {
-                if in_result {
-                    result = deserialize_content_directory(&value, ip)?;
-                }
+            Ok(XmlEvent::Characters(value)) if in_result => {
+                result = deserialize_content_directory(&value, ip)?;
             }
             _ => {}
         }
