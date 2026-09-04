@@ -9,6 +9,7 @@ authors = ["Tsiry Sandratraina <tsiry.sndr@aol.com>"]
 categories = ["command-line-utilities", "network-programming"]
 keywords = ["upnp", "client", "tokio", "dlna"]
 description = "A simple UPnP client written in Rust"
+rust-version = "1.80.0" # minimum for LazyLock
 
 [[example]]
 name = "discover"

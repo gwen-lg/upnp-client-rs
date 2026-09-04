@@ -5,11 +5,8 @@ pub mod media_server;
 pub mod parser;
 pub mod types;
 
-use std::sync::{mpsc::Sender, Mutex};
+use std::sync::{mpsc::Sender, LazyLock, Mutex};
 
-use lazy_static::lazy_static;
 use types::Event;
 
-lazy_static! {
-    static ref BROADCAST_EVENT: Mutex<Option<Sender<Event>>> = Mutex::new(None);
-}
+static BROADCAST_EVENT: LazyLock<Mutex<Option<Sender<Event>>>> = LazyLock::new(|| Mutex::new(None));
