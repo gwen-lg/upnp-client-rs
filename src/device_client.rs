@@ -10,6 +10,7 @@ use crate::{
 };
 use anyhow::{anyhow, Result};
 use hyper::{
+    body::HttpBody as _,
     server::conn::AddrStream,
     service::{make_service_fn, service_fn},
 };
@@ -209,7 +210,7 @@ impl DeviceClient {
                     .to_str()
                     .unwrap()
                     .to_string();
-                let body = hyper::body::to_bytes(req.into_body()).await?;
+                let body = req.into_body().collect().await?.to_bytes();
                 let xml = String::from_utf8(body.to_vec()).unwrap();
 
                 let last_change = parse_last_change(xml.as_str()).unwrap();
