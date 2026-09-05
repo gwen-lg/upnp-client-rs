@@ -50,12 +50,13 @@ pub enum ObjectClass {
 
 impl From<&str> for ObjectClass {
     fn from(value: &str) -> Self {
+        #[expect(clippy::match_same_arms)]
         match value {
             "object.item.audioItem.musicTrack" => ObjectClass::Audio,
             "object.item.videoItem.movie" => ObjectClass::Video,
             "object.item.imageItem.photo" => ObjectClass::Image,
             "object.container" => ObjectClass::Container,
-            _ => ObjectClass::Container,
+            _ => ObjectClass::Container, //TODO: add an unknown ?
         }
     }
 }
