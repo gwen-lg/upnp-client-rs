@@ -1,4 +1,3 @@
-use std::str::Split;
 use std::time::Duration;
 
 use crate::types::{Action, Argument, Container, Device, Item, Metadata, Service, TransportInfo};
@@ -268,7 +267,7 @@ pub fn parse_duration(xml_root: &str) -> Result<u32> {
     }
 
     let duration = duration.ok_or_else(|| anyhow!("Invalid response from device"))?;
-    let mut duration_iter = duration.split(":");
+    let mut duration_iter = duration.split(':');
     let hours = duration_iter.next().unwrap_or("0").parse::<u32>()?;
     let minutes = duration_iter.next().unwrap_or("0").parse::<u32>()?;
     let seconds = duration_iter.next().unwrap_or("0").parse::<u32>()?;
@@ -278,7 +277,6 @@ pub fn parse_duration(xml_root: &str) -> Result<u32> {
 pub fn parse_position(xml_root: &str) -> Result<u32> {
     let parser = EventReader::from_str(xml_root);
     let mut in_position = false;
-    let mut position_iter: Split<'_, &str>;
     let mut position: Option<String> = None;
     for e in parser {
         match e {
@@ -300,7 +298,7 @@ pub fn parse_position(xml_root: &str) -> Result<u32> {
     }
 
     let position = position.ok_or_else(|| anyhow!("Invalid response from device"))?;
-    position_iter = position.split(":");
+    let mut position_iter = position.split(':');
     let hours = position_iter.next().unwrap_or("0").parse::<u32>()?;
     let minutes = position_iter.next().unwrap_or("0").parse::<u32>()?;
     let seconds = position_iter.next().unwrap_or("0").parse::<u32>()?;
