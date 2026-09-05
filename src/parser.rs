@@ -329,7 +329,7 @@ pub fn parse_supported_protocols(xml_root: &str) -> Result<Vec<String>> {
             _ => {}
         }
     }
-    Ok(protocols.split(',').map(|s| s.to_string()).collect())
+    Ok(protocols.split(',').map(ToString::to_string).collect())
 }
 
 pub fn parse_last_change(xml_root: &str) -> Result<Option<String>> {
