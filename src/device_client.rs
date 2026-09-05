@@ -305,8 +305,9 @@ impl DeviceClient {
 }
 
 fn resolve_service(service_id: &str) -> String {
-    match service_id.contains(':') {
-        true => service_id.to_string(),
-        false => format!("urn:upnp-org:serviceId:{service_id}"),
+    if service_id.contains(':') {
+        service_id.to_string()
+    } else {
+        format!("urn:upnp-org:serviceId:{service_id}")
     }
 }
