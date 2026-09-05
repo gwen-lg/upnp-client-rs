@@ -612,6 +612,15 @@ pub fn deserialize_content_directory(xml: &str, ip: &str) -> Result<(Vec<Contain
                         {
                             items.last_mut().unwrap().protocol_info = attr.value.clone();
                         }
+
+                        // with album art is the second `res` of a item.
+                        if attr.name.local_name == "protocolInfo"
+                            && attr.value.contains("image")
+                            && attr.value.contains("JPEG_TN")
+                            && !items.last().unwrap().protocol_info.is_empty()
+                        {
+                            in_album_art = true;
+                        }
                         if attr.name.local_name == "size" {
                             items.last_mut().unwrap().size = Some(attr.value.parse::<u64>()?);
                         }
