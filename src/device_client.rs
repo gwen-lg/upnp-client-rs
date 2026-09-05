@@ -160,7 +160,7 @@ impl DeviceClient {
             env::consts::OS
         );
 
-        let (address, port) = self.ensure_eventing_server().await?;
+        let (address, port) = self.ensure_eventing_server()?;
         let callback = format!("<http://{address}:{port}>");
 
         let client = hyper::Client::new();
@@ -195,7 +195,7 @@ impl DeviceClient {
         Ok(())
     }
 
-    async fn ensure_eventing_server(&mut self) -> Result<(String, u16)> {
+    fn ensure_eventing_server(&mut self) -> Result<(String, u16)> {
         let addr: &str = "0.0.0.0:0";
         let listener = TcpListener::bind(addr)?;
 
