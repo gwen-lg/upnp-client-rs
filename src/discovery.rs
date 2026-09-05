@@ -39,9 +39,8 @@ pub async fn discover_pnp_locations() -> Result<impl Stream<Item = Device>> {
                 let response =
                     str::from_utf8(unsafe { std::slice::from_raw_parts(buf.as_ptr(), size) })?;
                 let headers = parse_raw_http_response(response)?;
-                let location = headers.get("location")
-                    .ok_or_else(|| anyhow!("Response header missing location"))?
-                    .to_string();
+                let location = (*headers.get("location")
+                    .ok_or_else(|| anyhow!("Response header missing location"))?).to_string();
                 Ok(location)
             }
 
