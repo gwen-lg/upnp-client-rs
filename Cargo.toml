@@ -63,3 +63,5 @@ colored_json = "5.0"
 pedantic = { level = "warn", priority = -1 }
 missing_errors_doc = "allow"
 missing_panics_doc = "allow"
+too_many_lines = "allow"
+assigning_clones = "allow"
