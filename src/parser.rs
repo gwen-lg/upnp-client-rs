@@ -173,11 +173,14 @@ pub async fn parse_service_description(scpd_url: &str) -> Result<Vec<Action>> {
         .map_err(|e| anyhow!("Failed to retrieve xml response from device: {e}"))?;
     let root = Element::from_reader(xml_root.as_bytes())?;
 
-    let action_list = match root.find("{urn:schemas-upnp-org:service-1-0}actionList") {
-        Some(action_list) => action_list,
-        None => return Ok(vec![]),
-    };
+    if let Some(action_list) = root.find("{urn:schemas-upnp-org:service-1-0}actionList") {
+        extract_actions(action_list)
+    } else {
+        Ok(vec![])
+    }
+}
 
+fn extract_actions(action_list: &Element) -> Result<Vec<Action>, anyhow::Error> {
     let mut actions = Vec::new();
     for xml_action in action_list.children() {
         let mut action = Action {
