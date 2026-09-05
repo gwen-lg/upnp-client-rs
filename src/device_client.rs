@@ -140,7 +140,7 @@ impl DeviceClient {
                 .iter()
                 .find(|s| s.service_id == service_id)
                 .ok_or_else(|| {
-                    anyhow!("Service with requested service_id {service_id} does not exist")
+                    anyhow!("Service with requested service_id {service_id} does not exist",)
                 })?;
             return Ok(service.clone());
         }
@@ -200,81 +200,7 @@ impl DeviceClient {
         let listener = TcpListener::bind(addr)?;
 
         let service = make_service_fn(|_: &AddrStream| async {
-            Ok::<_, hyper::Error>(service_fn(|req: Request<Body>| async move {
-                let sid = req
-                    .headers()
-                    .get("sid")
-                    .unwrap()
-                    .to_str()
-                    .unwrap()
-                    .to_string();
-                let body = req.into_body().collect().await?.to_bytes();
-                let xml = String::from_utf8(body.to_vec()).unwrap();
-
-                let last_change = parse_last_change(xml.as_str()).unwrap();
-                let last_change = last_change.unwrap_or_default();
-
-                let transport_state = parse_transport_state(last_change.as_str()).unwrap();
-                let play_mode = parse_current_play_mode(last_change.as_str()).unwrap();
-                let av_transport_uri_metadata =
-                    parse_av_transport_uri_metadata(last_change.as_str()).unwrap();
-                let current_track_metadata =
-                    parse_current_track_metadata(last_change.as_str()).unwrap();
-
-                if let Some(state) = transport_state {
-                    let tx = BROADCAST_EVENT.lock().unwrap();
-                    let tx = tx.as_ref();
-                    let ev = AVTransportEvent::TransportState {
-                        sid: sid.clone(),
-                        transport_state: state,
-                    };
-                    tx.unwrap().send(Event::AVTransport(ev)).unwrap();
-                }
-
-                if let Some(mode) = play_mode {
-                    let tx = BROADCAST_EVENT.lock().unwrap();
-                    let tx = tx.as_ref();
-                    let ev = AVTransportEvent::CurrentPlayMode {
-                        sid: sid.clone(),
-                        play_mode: mode,
-                    };
-                    tx.unwrap().send(Event::AVTransport(ev)).unwrap();
-                }
-
-                if let Some(metadata) = av_transport_uri_metadata {
-                    let tx = BROADCAST_EVENT.lock().unwrap();
-                    let tx = tx.as_ref();
-                    let m = deserialize_metadata(metadata.as_str()).unwrap();
-                    let ev = AVTransportEvent::AVTransportURIMetaData {
-                        sid: sid.clone(),
-                        url: m.url,
-                        title: m.title,
-                        artist: m.artist,
-                        album: m.album,
-                        album_art_uri: m.album_art_uri,
-                        genre: m.genre,
-                    };
-                    tx.unwrap().send(Event::AVTransport(ev)).unwrap();
-                }
-
-                if let Some(metadata) = current_track_metadata {
-                    let m = deserialize_metadata(metadata.as_str()).unwrap();
-                    let tx = BROADCAST_EVENT.lock().unwrap();
-                    let tx = tx.as_ref();
-                    let ev = AVTransportEvent::CurrentTrackMetadata {
-                        sid: sid.clone(),
-                        url: m.url,
-                        title: m.title,
-                        artist: m.artist,
-                        album: m.album,
-                        album_art_uri: m.album_art_uri,
-                        genre: m.genre,
-                    };
-                    tx.unwrap().send(Event::AVTransport(ev)).unwrap();
-                }
-
-                Ok::<_, hyper::Error>(Response::new(Body::empty()))
-            }))
+            Ok::<_, hyper::Error>(service_fn(eventing_service))
         });
 
         let server = Server::from_tcp(listener).unwrap().serve(service);
@@ -302,6 +228,80 @@ impl DeviceClient {
         *stop = true;
         Ok(())
     }
+}
+
+async fn eventing_service(req: Request<Body>) -> Result<Response<Body>, hyper::Error> {
+    let sid = req
+        .headers()
+        .get("sid")
+        .unwrap()
+        .to_str()
+        .unwrap()
+        .to_string();
+    let body = req.into_body().collect().await?.to_bytes();
+    let xml = String::from_utf8(body.to_vec()).unwrap();
+
+    let last_change = parse_last_change(xml.as_str()).unwrap();
+    let last_change = last_change.unwrap_or_default();
+
+    let transport_state = parse_transport_state(last_change.as_str()).unwrap();
+    let play_mode = parse_current_play_mode(last_change.as_str()).unwrap();
+    let av_transport_uri_metadata = parse_av_transport_uri_metadata(last_change.as_str()).unwrap();
+    let current_track_metadata = parse_current_track_metadata(last_change.as_str()).unwrap();
+
+    if let Some(state) = transport_state {
+        let tx = BROADCAST_EVENT.lock().unwrap();
+        let tx = tx.as_ref();
+        let ev = AVTransportEvent::TransportState {
+            sid: sid.clone(),
+            transport_state: state,
+        };
+        tx.unwrap().send(Event::AVTransport(ev)).unwrap();
+    }
+
+    if let Some(mode) = play_mode {
+        let tx = BROADCAST_EVENT.lock().unwrap();
+        let tx = tx.as_ref();
+        let ev = AVTransportEvent::CurrentPlayMode {
+            sid: sid.clone(),
+            play_mode: mode,
+        };
+        tx.unwrap().send(Event::AVTransport(ev)).unwrap();
+    }
+
+    if let Some(metadata) = av_transport_uri_metadata {
+        let tx = BROADCAST_EVENT.lock().unwrap();
+        let tx = tx.as_ref();
+        let m = deserialize_metadata(metadata.as_str()).unwrap();
+        let ev = AVTransportEvent::AVTransportURIMetaData {
+            sid: sid.clone(),
+            url: m.url,
+            title: m.title,
+            artist: m.artist,
+            album: m.album,
+            album_art_uri: m.album_art_uri,
+            genre: m.genre,
+        };
+        tx.unwrap().send(Event::AVTransport(ev)).unwrap();
+    }
+
+    if let Some(metadata) = current_track_metadata {
+        let m = deserialize_metadata(metadata.as_str()).unwrap();
+        let tx = BROADCAST_EVENT.lock().unwrap();
+        let tx = tx.as_ref();
+        let ev = AVTransportEvent::CurrentTrackMetadata {
+            sid: sid.clone(),
+            url: m.url,
+            title: m.title,
+            artist: m.artist,
+            album: m.album,
+            album_art_uri: m.album_art_uri,
+            genre: m.genre,
+        };
+        tx.unwrap().send(Event::AVTransport(ev)).unwrap();
+    }
+
+    Ok::<_, hyper::Error>(Response::new(Body::empty()))
 }
 
 fn resolve_service(service_id: &str) -> String {
