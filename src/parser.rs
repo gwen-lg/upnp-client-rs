@@ -566,7 +566,7 @@ pub fn deserialize_content_directory(xml: &str, ip: &str) -> Result<(Vec<Contain
                 if name.local_name == "container" {
                     in_container = true;
                     let mut container = Container::default();
-                    for attr in attributes.clone() {
+                    for attr in &attributes {
                         if attr.name.local_name == "id" {
                             container.id = attr.value.clone();
                         } else if attr.name.local_name == "parentID" {
@@ -577,7 +577,7 @@ pub fn deserialize_content_directory(xml: &str, ip: &str) -> Result<(Vec<Contain
                 } else if name.local_name == "item" {
                     in_item = true;
                     let mut item = Item::default();
-                    for attr in attributes.clone() {
+                    for attr in &attributes {
                         if attr.name.local_name == "id" {
                             item.id = attr.value.clone();
                         } else if attr.name.local_name == "parentID" {
