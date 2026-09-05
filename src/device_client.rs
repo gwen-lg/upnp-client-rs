@@ -14,7 +14,7 @@ use hyper::{
     server::conn::AddrStream,
     service::{make_service_fn, service_fn},
 };
-use hyper::{Body, Request, Response, Server};
+use hyper::{Request, Response};
 use surf::{Client, Config, Url};
 use tokio::sync::Mutex;
 use xml_builder::{XMLBuilder, XMLElement, XMLVersion};
@@ -163,7 +163,6 @@ impl DeviceClient {
         let (address, port) = self.ensure_eventing_server()?;
         let callback = format!("<http://{address}:{port}>");
 
-        let client = hyper::Client::new();
         let req = hyper::Request::builder()
             .method("SUBSCRIBE")
             .uri(service.event_sub_url.clone())
@@ -171,7 +170,8 @@ impl DeviceClient {
             .header("NT", "upnp:event")
             .header("TIMEOUT", "Second-1800")
             .header("USER-AGENT", user_agent)
-            .body(hyper::Body::empty())?;
+            .body(http_body_util::Empty::new())?;
+        let client = hyper_util::client::legacy::Client::new();
         client.request(req).await?;
         Ok(())
     }
@@ -182,13 +182,13 @@ impl DeviceClient {
         }
         let service_id = resolve_service(service_id);
         let service = self.get_service_description(&service_id)?;
-        let client = hyper::Client::new();
         let req = hyper::Request::builder()
             .method("UNSUBSCRIBE")
             .uri(service.event_sub_url.clone())
             .header("SID", sid)
-            .body(hyper::Body::empty())?;
+            .body(http_body_util::Empty::new())?;
 
+        let client = hyper_util::client::legacy::Client::new();
         client.request(req).await?;
 
         self.release_eventing_server().await?;
