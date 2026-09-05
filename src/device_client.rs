@@ -49,6 +49,7 @@ impl DeviceClient {
         })
     }
 
+    #[must_use]
     pub fn ip(&self) -> String {
         self.base_url.host_str().unwrap().to_string()
     }

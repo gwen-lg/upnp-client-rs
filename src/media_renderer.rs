@@ -30,6 +30,7 @@ pub struct MediaRendererClient {
 }
 
 impl MediaRendererClient {
+    #[must_use]
     pub fn new(device_client: DeviceClient) -> Self {
         Self { device_client }
     }

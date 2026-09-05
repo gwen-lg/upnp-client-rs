@@ -61,6 +61,7 @@ impl From<&str> for ObjectClass {
 }
 
 impl ObjectClass {
+    #[must_use]
     pub fn value(&self) -> &'static str {
         match self {
             ObjectClass::Audio => "object.item.audioItem.musicTrack",

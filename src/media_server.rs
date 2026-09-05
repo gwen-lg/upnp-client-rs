@@ -13,6 +13,7 @@ pub struct MediaServerClient {
 }
 
 impl MediaServerClient {
+    #[must_use]
     pub fn new(device_client: DeviceClient) -> Self {
         Self { device_client }
     }
