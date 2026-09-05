@@ -64,7 +64,7 @@ impl DeviceClient {
             return Err(anyhow!("Device not connected"));
         }
         let service_id = resolve_service(service_id);
-        let service = self.get_service_description(&service_id).await?;
+        let service = self.get_service_description(&service_id)?;
 
         // check if action is available
         let action = service.actions.iter().find(|a| a.name == action_name);
@@ -133,7 +133,7 @@ impl DeviceClient {
         res.body_string().await.map_err(|e| anyhow!(e.to_string()))
     }
 
-    async fn get_service_description(&self, service_id: &str) -> Result<Service> {
+    fn get_service_description(&self, service_id: &str) -> Result<Service> {
         if let Some(device) = &self.device {
             let service = device
                 .services
@@ -152,7 +152,7 @@ impl DeviceClient {
             return Err(anyhow!("Device not connected"));
         }
         let service_id = resolve_service(service_id);
-        let service = self.get_service_description(&service_id).await?;
+        let service = self.get_service_description(&service_id)?;
 
         let user_agent = format!(
             "upnp-client/{} ({})",
@@ -181,7 +181,7 @@ impl DeviceClient {
             return Err(anyhow!("Device not connected"));
         }
         let service_id = resolve_service(service_id);
-        let service = self.get_service_description(&service_id).await?;
+        let service = self.get_service_description(&service_id)?;
         let client = hyper::Client::new();
         let req = hyper::Request::builder()
             .method("UNSUBSCRIBE")
