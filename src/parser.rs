@@ -92,10 +92,10 @@ fn parse_attribute(xml_root: &str, xml_name: &str) -> Result<String> {
             );
             match element {
                 Some(element) => Ok(element.text().to_string()),
-                None => Ok("".to_string()),
+                None => Ok(String::new()),
             }
         }
-        None => Ok("".to_string()),
+        None => Ok(String::new()),
     }
 }
 
@@ -310,7 +310,7 @@ pub fn parse_position(xml_root: &str) -> Result<u32> {
 pub fn parse_supported_protocols(xml_root: &str) -> Result<Vec<String>> {
     let parser = EventReader::from_str(xml_root);
     let mut in_protocol = false;
-    let mut protocols: String = "".to_string();
+    let mut protocols = String::new();
     for e in parser {
         match e {
             Ok(XmlEvent::StartElement { name, .. }) => {
@@ -447,7 +447,7 @@ pub fn deserialize_metadata(xml: &str) -> Result<Metadata> {
     let mut artist: Option<String> = None;
     let mut album: Option<String> = None;
     let mut album_art: Option<String> = None;
-    let mut url: String = String::from("");
+    let mut url: String = String::new();
 
     for e in parser {
         match e {
