@@ -454,41 +454,43 @@ pub fn deserialize_metadata(xml: &str) -> Result<Metadata> {
         match e {
             Ok(XmlEvent::StartElement {
                 name, attributes, ..
-            }) => {
-                if name.local_name == "item" {
+            }) => match name.local_name.as_str() {
+                "item" => {
                     for attr in attributes {
                         if attr.name.local_name == "id" {
                             url = attr.value;
                         }
                     }
                 }
-                if name.local_name == "title" {
+                "title" => {
                     in_title = true;
                 }
-                if name.local_name == "artist" {
+                "artist" => {
                     in_artist = true;
                 }
-                if name.local_name == "album" {
+                "album" => {
                     in_album = true;
                 }
-                if name.local_name == "albumArtURI" {
+                "albumArtURI" => {
                     in_album_art = true;
                 }
-            }
-            Ok(XmlEvent::EndElement { name }) => {
-                if name.local_name == "title" {
+                _ => {}
+            },
+            Ok(XmlEvent::EndElement { name }) => match name.local_name.as_str() {
+                "title" => {
                     in_title = false;
                 }
-                if name.local_name == "artist" {
+                "artist" => {
                     in_artist = false;
                 }
-                if name.local_name == "album" {
+                "album" => {
                     in_album = false;
                 }
-                if name.local_name == "albumArtURI" {
+                "albumArtURI" => {
                     in_album_art = false;
                 }
-            }
+                _ => {}
+            },
             Ok(XmlEvent::Characters(value)) => {
                 if in_title {
                     title = Some(value.clone());
@@ -567,64 +569,49 @@ pub fn deserialize_content_directory(xml: &str, ip: &str) -> Result<(Vec<Contain
                     for attr in attributes.clone() {
                         if attr.name.local_name == "id" {
                             container.id = attr.value.clone();
-                        }
-                        if attr.name.local_name == "parentID" {
+                        } else if attr.name.local_name == "parentID" {
                             container.parent_id = attr.value.clone();
                         }
                     }
                     containers.push(container);
-                }
-                if name.local_name == "item" {
+                } else if name.local_name == "item" {
                     in_item = true;
                     let mut item = Item::default();
                     for attr in attributes.clone() {
                         if attr.name.local_name == "id" {
                             item.id = attr.value.clone();
-                        }
-                        if attr.name.local_name == "parentID" {
+                        } else if attr.name.local_name == "parentID" {
                             item.parent_id = attr.value.clone();
                         }
                     }
                     items.push(item);
-                }
-                if name.local_name == "title" {
+                } else if name.local_name == "title" {
                     in_title = true;
-                }
-                if name.local_name == "artist" {
+                } else if name.local_name == "artist" {
                     in_artist = true;
-                }
-                if name.local_name == "album" {
+                } else if name.local_name == "album" {
                     in_album = true;
-                }
-                if name.local_name == "albumArtURI" {
+                } else if name.local_name == "albumArtURI" {
                     in_album_art = true;
-                }
-                if name.local_name == "genre" {
+                } else if name.local_name == "genre" {
                     in_genre = true;
-                }
-                if name.local_name == "class" {
+                } else if name.local_name == "class" {
                     in_class = true;
-                }
-                if name.local_name == "res" {
-                    for attr in attributes {
-                        if attr.name.local_name == "protocolInfo"
-                            && (attr.value.contains("audio") || attr.value.contains("video"))
-                        {
-                            items.last_mut().unwrap().protocol_info = attr.value.clone();
-                        }
-
-                        // with album art is the second `res` of a item.
-                        if attr.name.local_name == "protocolInfo"
-                            && attr.value.contains("image")
-                            && attr.value.contains("JPEG_TN")
-                            && !items.last().unwrap().protocol_info.is_empty()
-                        {
-                            in_album_art = true;
-                        }
-                        if attr.name.local_name == "size" {
+                } else if name.local_name == "res" {
+                    for attr in &attributes {
+                        if attr.name.local_name == "protocolInfo" {
+                            if attr.value.contains("audio") || attr.value.contains("video") {
+                                items.last_mut().unwrap().protocol_info = attr.value.clone();
+                            } else if attr.value.contains("image")
+                                && attr.value.contains("JPEG_TN")
+                                && !items.last().unwrap().protocol_info.is_empty()
+                            // with album art is the second `res` of a item.
+                            {
+                                in_album_art = true;
+                            }
+                        } else if attr.name.local_name == "size" {
                             items.last_mut().unwrap().size = Some(attr.value.parse::<u64>()?);
-                        }
-                        if attr.name.local_name == "duration" {
+                        } else if attr.name.local_name == "duration" {
                             items.last_mut().unwrap().duration = Some(attr.value.clone());
                         }
                     }
@@ -634,29 +621,21 @@ pub fn deserialize_content_directory(xml: &str, ip: &str) -> Result<(Vec<Contain
             Ok(XmlEvent::EndElement { name }) => {
                 if name.local_name == "container" {
                     in_container = false;
-                }
-                if name.local_name == "item" {
+                } else if name.local_name == "item" {
                     in_item = false;
-                }
-                if name.local_name == "title" {
+                } else if name.local_name == "title" {
                     in_title = false;
-                }
-                if name.local_name == "artist" {
+                } else if name.local_name == "artist" {
                     in_artist = false;
-                }
-                if name.local_name == "album" {
+                } else if name.local_name == "album" {
                     in_album = false;
-                }
-                if name.local_name == "albumArtURI" {
+                } else if name.local_name == "albumArtURI" {
                     in_album_art = false;
-                }
-                if name.local_name == "genre" {
+                } else if name.local_name == "genre" {
                     in_genre = false;
-                }
-                if name.local_name == "class" {
+                } else if name.local_name == "class" {
                     in_class = false;
-                }
-                if name.local_name == "res" {
+                } else if name.local_name == "res" {
                     in_res = false;
                 }
             }
