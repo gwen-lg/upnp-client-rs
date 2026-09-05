@@ -40,6 +40,20 @@ impl MediaServerClient {
         parse_browse_response(&response, &ip)
     }
 
+    pub async fn browse_string(&self, object_id: &str, browse_flag: &str) -> Result<String, Error> {
+        let mut params = HashMap::new();
+        params.insert("ObjectID".to_string(), object_id.to_string());
+        params.insert("BrowseFlag".to_string(), browse_flag.to_string());
+        params.insert("Filter".to_string(), "*".to_string());
+        params.insert("StartingIndex".to_string(), "0".to_string());
+        params.insert("RequestedCount".to_string(), "0".to_string());
+        params.insert("SortCriteria".to_string(), "".to_string());
+
+        self.device_client
+            .call_action("ContentDirectory", "Browse", params)
+            .await
+    }
+
     pub async fn get_sort_capabilities(&self) -> Result<(), Error> {
         let params = HashMap::new();
         self.device_client
