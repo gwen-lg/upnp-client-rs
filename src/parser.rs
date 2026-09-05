@@ -16,7 +16,7 @@ pub async fn parse_location(location: &str) -> Result<Device> {
     let xml_root = client
         .recv_string(req)
         .await
-        .map_err(|e| anyhow!("Failed to retrieve xml from device endpoint: {}", e))?;
+        .map_err(|e| anyhow!("Failed to retrieve xml from device endpoint: {e}"))?;
 
     let mut device = Device {
         location: location.to_string(),
@@ -171,7 +171,7 @@ pub async fn parse_service_description(scpd_url: &str) -> Result<Vec<Action>> {
     let xml_root = client
         .recv_string(req)
         .await
-        .map_err(|e| anyhow!("Failed to retrieve xml response from device: {}", e))?;
+        .map_err(|e| anyhow!("Failed to retrieve xml response from device: {e}"))?;
     let root = Element::from_reader(xml_root.as_bytes())?;
 
     let action_list = match root.find("{urn:schemas-upnp-org:service-1-0}actionList") {

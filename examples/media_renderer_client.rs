@@ -48,7 +48,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     tokio::pin!(events);
 
     while let Some(event) = events.next().await {
-        println!("\n{}\n", event);
+        println!("\n{event}\n");
     }
 
     // media_renderer.stop().await?;

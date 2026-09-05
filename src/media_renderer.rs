@@ -37,7 +37,7 @@ impl MediaRendererClient {
     pub async fn load(&self, url: &str, options: LoadOptions) -> Result<(), Error> {
         let dlna_features = options.dlna_features.unwrap_or("*".to_string());
         let content_type = options.content_type.unwrap_or("video/mpeg".to_string());
-        let protocol_info = format!("http-get:*:{}:{}", content_type, dlna_features);
+        let protocol_info = format!("http-get:*:{content_type}:{dlna_features}");
         let title = options.metadata.clone().unwrap_or_default().title;
         let artist = options.metadata.clone().unwrap_or_default().artist;
         let album = options.metadata.clone().unwrap_or_default().album;
@@ -132,7 +132,7 @@ impl MediaRendererClient {
     pub async fn set_next(&self, url: &str, options: LoadOptions) -> Result<(), Error> {
         let dlna_features = options.dlna_features.unwrap_or("*".to_string());
         let content_type = options.content_type.unwrap_or("video/mpeg".to_string());
-        let protocol_info = format!("http-get:*:{}:{}", content_type, dlna_features);
+        let protocol_info = format!("http-get:*:{content_type}:{dlna_features}");
         let title = options.metadata.clone().unwrap_or_default().title;
         let artist = options.metadata.clone().unwrap_or_default().artist;
         let album = options.metadata.clone().unwrap_or_default().album;
@@ -309,5 +309,5 @@ fn format_time(seconds: u64) -> String {
     let hours = seconds / 3600;
     let minutes = (seconds % 3600) / 60;
     let seconds = seconds % 60;
-    format!("{:02}:{:02}:{:02}", hours, minutes, seconds)
+    format!("{hours:02}:{minutes:02}:{seconds:02}")
 }

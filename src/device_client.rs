@@ -98,23 +98,23 @@ impl DeviceClient {
         );
 
         let mut body = XMLElement::new("s:Body");
-        let action = format!("u:{}", action_name);
+        let action = format!("u:{action_name}");
         let mut action = XMLElement::new(action.as_str());
         action.add_attribute("xmlns:u", service.service_type.as_str());
 
         for (name, value) in params {
             let mut param = XMLElement::new(name.as_str());
-            param.add_text(value).map_err(|e| anyhow!("{:?}", e))?;
-            action.add_child(param).map_err(|e| anyhow!("{:?}", e))?;
+            param.add_text(value).map_err(|e| anyhow!("{e:?}"))?;
+            action.add_child(param).map_err(|e| anyhow!("{e:?}"))?;
         }
 
-        body.add_child(action).map_err(|e| anyhow!("{:?}", e))?;
-        envelope.add_child(body).map_err(|e| anyhow!("{:?}", e))?;
+        body.add_child(action).map_err(|e| anyhow!("{e:?}"))?;
+        envelope.add_child(body).map_err(|e| anyhow!("{e:?}"))?;
 
         xml.set_root_element(envelope);
 
         let mut writer: Vec<u8> = Vec::new();
-        xml.generate(&mut writer).map_err(|e| anyhow!("{:?}", e))?;
+        xml.generate(&mut writer).map_err(|e| anyhow!("{e:?}"))?;
         let xml = String::from_utf8(writer)?;
 
         let soap_action = format!("\"{}#{}\"", service.service_type, action_name);
@@ -140,10 +140,7 @@ impl DeviceClient {
                 .iter()
                 .find(|s| s.service_id == service_id)
                 .ok_or_else(|| {
-                    anyhow!(
-                        "Service with requested service_id {} does not exist",
-                        service_id
-                    )
+                    anyhow!("Service with requested service_id {service_id} does not exist")
                 })?;
             return Ok(service.clone());
         }
@@ -164,7 +161,7 @@ impl DeviceClient {
         );
 
         let (address, port) = self.ensure_eventing_server().await?;
-        let callback = format!("<http://{}:{}>", address, port);
+        let callback = format!("<http://{address}:{port}>");
 
         let client = hyper::Client::new();
         let req = hyper::Request::builder()
@@ -310,6 +307,6 @@ impl DeviceClient {
 fn resolve_service(service_id: &str) -> String {
     match service_id.contains(':') {
         true => service_id.to_string(),
-        false => format!("urn:upnp-org:serviceId:{}", service_id),
+        false => format!("urn:upnp-org:serviceId:{service_id}"),
     }
 }

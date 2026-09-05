@@ -26,6 +26,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let results = media_server_client
         .browse("0", "BrowseDirectChildren")
         .await?;
-    println!("{:#?}", results);
+    println!("{results:#?}");
     Ok(())
 }
