@@ -605,8 +605,7 @@ pub fn deserialize_content_directory(xml: &str, ip: &str) -> Result<(Vec<Contain
                 if name.local_name == "res" {
                     for attr in attributes {
                         if attr.name.local_name == "protocolInfo"
-                            && (attr.value.clone().contains("audio")
-                                || attr.value.clone().contains("video"))
+                            && (attr.value.contains("audio") || attr.value.contains("video"))
                         {
                             items.last_mut().unwrap().protocol_info = attr.value.clone();
                         }
